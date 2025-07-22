@@ -1,0 +1,50 @@
+# Here you can add your aliases and functions
+
+
+# ls aliases
+alias ll='ls -al'
+alias la='ls -a'
+
+# Adds .bak at the end of the file
+# First might be option:
+# - -m, --move : moves the file instead of copying it
+# Then all the rest go into for loop
+function bak() {
+    # check if move or copy
+    if [[ $1 == -m || $1 == --move ]]; then
+        cmd="mv"
+        shift
+    else
+        cmd="cp"
+    fi
+
+    # if rest empty, return error
+    if [[ $# -eq 0 ]]; then
+        echo "bak: no files found"
+        echo "bak [-m, --move] [FILES]"
+        return 1
+    fi
+
+    # loop over all the files
+    for file in "$@"; do
+        $cmd "$file" "$file.bak"
+    done
+}
+
+# If the file end in .bak, remove it
+function unbak() {
+    # if rest empty, return error
+    if [[ $# -eq 0 ]]; then
+        echo "unbak: no files found"
+        echo "unbak [FILES]"
+        return 1
+    fi
+
+    for file in "$@"; do
+        if [[ $file == *.bak ]]; then
+            mv "$file" "${file%.bak}"
+        else
+            echo "$file is not a .bak file"
+        fi
+    done
+}
